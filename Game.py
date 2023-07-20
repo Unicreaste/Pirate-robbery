@@ -1,5 +1,6 @@
 import pygame
 import os
+import subprocess
 
 pygame.init()
 
@@ -52,7 +53,8 @@ class ButonPlay(pygame.sprite.Sprite):
     def get_event(self, event):
         global run
         if self.rect.collidepoint(event.pos):
-            start_sprites.clear(background, gameDisplay)
+            run = False
+            subprocess.call("Land.py", shell=True)
 
 
 class ButonSet(pygame.sprite.Sprite):
