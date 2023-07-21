@@ -1,4 +1,4 @@
-import pygame, math
+import pygame, math, os
 
 WIDTH = 800
 HEIGHT = 600
@@ -26,6 +26,24 @@ pygame.display.set_caption("")
 clock = pygame.time.Clock()
 
 
+
+def load_image(name, color_key=None):
+    fullname = os.path.join('data', name)
+    try:
+        image = pygame.image.load(fullname).convert()
+    except pygame.error as message:
+        print('Cannot load image:', name)
+        raise SystemExit(message)
+
+    if color_key is not None:
+        if color_key == -1:
+            color_key = image.get_at((0, 0))
+        image.set_colorkey(color_key)
+    else:
+        image = image.convert_alpha()
+    return image
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -42,6 +60,7 @@ class Player(pygame.sprite.Sprite):
         return f"coords: {self.x}, {self.y}"
 
     def update(self):
+        global dialog
         self.speedx = 0
         self.x = self.rect.left
         self.y = self.rect.top
@@ -71,8 +90,8 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom > 500:
             self.rect.bottom = 500
 
-        if 420 < self.rect.right < 480 and 270 < self.rect.bottom < 350 and keystate[pygame.K_z]:
-            running = False
+        if 420 < self.rect.right < 480 and 270 < self.rect.bottom < 350:
+            dialog = Dialog_window(all_sprites)
 
 
     def get_event(self, event):
@@ -90,6 +109,21 @@ class NPS(pygame.sprite.Sprite):
         self.rect.centerx = 460
         self.rect.bottom = 300
         self.speedx = 0
+
+    def get_event(self, event):
+        global run
+        if self.rect.collidepoint(event.pos):
+            pass
+
+
+class Dialog_window(pygame.sprite.Sprite):
+    image = load_image('Bt_X.png', color_key=-1)
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Dialog_window.image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (400, 300)
 
     def get_event(self, event):
         global run
